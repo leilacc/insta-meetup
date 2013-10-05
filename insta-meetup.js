@@ -42,7 +42,7 @@ if (Meteor.isClient) {
   };
 
   Template.tag_results.results = function() {
-    return Session.get('tag_results');
+    return getTagResults(Session.get('curr_tag'));
   };
 
   Template.tag_results.tag = function() {
@@ -79,7 +79,6 @@ if (Meteor.isClient) {
 
   Template.new_meetup.events({
     'submit #new_meetup_wrapper': function() {
-      debugger;
       var $meetup = $('#new_meetup');
       var tags_tuple = getTags($meetup.val());
       var tags = tags_tuple[1];
@@ -109,7 +108,7 @@ if (Meteor.isClient) {
     setPageState();
   };
 
-  function setTagResults(tag_name) {
+  function getTagResults(tag_name) {
     Session.set('curr_tag', tag_name);
     var tag_meetup_ids = getMeetupsFromTagName(tag_name);
     if (tag_meetup_ids == null) {
@@ -121,11 +120,11 @@ if (Meteor.isClient) {
       curr_meetup_id = tag_meetup_ids[i];
       tag_results.push(Meetups.find({_id: curr_meetup_id}).fetch()[0]);
     }
-    Session.set('tag_results', tag_results);
+    return tag_results
   }
 
   function setPageState() {
-    setTagResults(window.location.hash);
+    getTagResults(window.location.hash);
   }
 
   function getMeetupsFromTagName(tag_name) {
@@ -136,11 +135,15 @@ if (Meteor.isClient) {
     return null;
   }
 
+  function unsetCurrTag() {
+    Session.set('curr_tag', '');
+    Session.set('tag_results', null);
+    history.pushState(null, null, '/');
+  }
+
   Template.tag_results.events({
     'click .stop_tag_search': function(event) {
-      Session.set('curr_tag', '');
-      Session.set('tag_results', null);
-      history.pushState(null, null, '/');
+      unsetCurrTag();
     }
   });
 }

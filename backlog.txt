@@ -1,2 +1,3 @@
--clear meetup input box after submission
 -don't allow empty meetups to be submitted
+-support searching by multiple tags at once
+-untag from TagHash on delete

@@ -3,15 +3,20 @@
 </head>
 
 <body>
+  <div id='fblogin'>
+    {{loginButtons}}
+  </div>
   {{> feed}}
 </body>
 
 <template name="feed">
   <form id='new_meetup_wrapper'>
-    <input type="text" placeholder="New meetup" id="new_meetup">
-    <input type="submit" value="Go" />
+    Who wants to
+    <input type="text" placeholder="play Settlers of Catan" id="new_meetup">
+    <input type="submit" value="?" />
   </form>
   {{#each meetups}}
     {{this.meetup}}
+    <br>
   {{/each}}
 </template>

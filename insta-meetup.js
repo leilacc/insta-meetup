@@ -19,8 +19,18 @@ if (Meteor.isClient) {
 
   $(function() {
     $('body').on('click', 'a', function() {
-      history.pushState(null, null, encodeURI($(this).attr('href')));
-      setPageState();
+      var url_suffix = $(this).attr('href').slice(1);
+      if (url_suffix != window.location.hash) {
+          // Trying to change to a different page
+        if (url_suffix == '') {
+          // Trying to go back to main page
+          unsetCurrTag();        
+        } else {
+          // Trying to go to a tag page
+          history.pushState(null, null, encodeURI(url_suffix));
+          setPageState();
+        }
+      }
       return false;
     });
   });

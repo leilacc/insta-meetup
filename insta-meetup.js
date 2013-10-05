@@ -1,13 +1,18 @@
+var Meetups = new Meteor.Collection("meetups");
+
 if (Meteor.isClient) {
-  Template.hello.greeting = function () {
-    return "Welcome to insta-meetup.";
+  window.Meetups = Meetups;
+
+  Template.feed.meetups = function() {
+    return Meetups.find({}).fetch();
   };
 
-  Template.hello.events({
-    'click input' : function () {
-      // template data, if any, is available in 'this'
-      if (typeof console !== 'undefined')
-        console.log("You pressed the button");
+  Template.feed.events({
+    'submit #new_meetup_wrapper': function() {
+      var $meetup = $('#new_meetup');
+      console.log($meetup.val());
+      Meetups.insert({meetup: $meetup.val()});
+      return false;
     }
   });
 }

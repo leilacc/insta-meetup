@@ -6,17 +6,32 @@
   <div id='fblogin'>
     {{loginButtons}}
   </div>
-  {{> feed}}
+  <div id='tag_results'>
+    {{> tag_results}}
+  </div>
+  {{> new_meetup}}
+  <div id='feed'>
+    {{> feed}}
+  </div>
 </body>
 
-<template name="feed">
+<template name="new_meetup">
   <form id='new_meetup_wrapper'>
     Who wants to
-    <input type="text" placeholder="play Settlers of Catan" id="new_meetup">
+    <input type="text" placeholder="play Settlers of Catan" id="new_activity">
     <input type="submit" value="?" />
   </form>
+</template>
+
+<template name="feed">
   {{#each meetups}}
-    {{this.meetup}}
+    {{{this.activity_with_linked_tags}}}
     <br>
+  {{/each}}
+</template>
+
+<template name="tag_results">
+  {{#each results}}
+    {{this}}
   {{/each}}
 </template>

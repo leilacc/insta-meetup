@@ -1,6 +1,7 @@
 var Meetups = new Meteor.Collection("meetups");
 // Map of tag to array of meetup IDs containing that tag
 var TagHash = new Meteor.Collection("tagHash");
+var curDate = new Date();
 
 if (Meteor.isClient) {
   // for debugging
@@ -24,6 +25,18 @@ if (Meteor.isClient) {
     });
   });
 
+  function deleteOld() {
+    var meets = Meetups.find({});
+    meets.forEach(function(meet) {
+          if(curDate.getDate() > (parseInt(meet.timestamp)+3) % 30) {
+            Meetups.remove({_id: meet._id});
+          }
+    });
+  }
+
+  deleteOld();
+
+  Meteor.loginWithFacebook();
   Template.feed.meetups = function() {
     return Meetups.find({}).fetch().reverse();
   };
@@ -32,8 +45,8 @@ if (Meteor.isClient) {
     return Session.get('tag_results');
   };
 
-  function getTags(activity) {
-    var tokens = activity.split(" ");
+  function getTags(meetup) {
+    var tokens = meetup.split(" ");
     var tags = [];
     var linked_val = [];
     for (var i = 0; i < tokens.length; i++) {
@@ -62,14 +75,26 @@ if (Meteor.isClient) {
 
   Template.feed.events({
     'submit #new_meetup_wrapper': function() {
-      var $activity = $('#new_activity');
-      var tags_tuple = getTags($activity.val());
+      var $meetup = $('#new_meetup');
+      var tags_tuple = getTags($meetup.val());
       var tags = tags_tuple[1];
-      var new_meetup = Meetups.insert({activity: $activity.val(),
+      var datetime = "Creation Date: " + (curDate.getMonth()+1) + "/"
+                      + (curDate.getDate())  + "/"
+                      + curDate.getFullYear() + " @ "
+                      + curDate.getHours() + ":"
+                      + curDate.getMinutes() + ":"
+                      + curDate.getSeconds();
+
+      var new_meetup = Meetups.insert({meetup: $meetup.val(),
                                        tags: tags,
-                                       activity_with_linked_tags:
-                                         tags_tuple[0]});
+                                       meetup_with_linked_tags:
+                                         tags_tuple[0],
+                                       timestamp: new Date().getDate(),
+                                       datetime: datetime});
+
       updateTagHash(new_meetup, tags);
+      $meetup.val('');
+      deleteOld();
       return false;
     }
   });

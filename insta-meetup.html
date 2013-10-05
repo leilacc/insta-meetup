@@ -26,6 +26,8 @@
 <template name="feed">
   {{#each meetups}}
     {{{this.activity_with_linked_tags}}}
+    {{this.meetup}}
+    {{this.datetime}}
     <br>
   {{/each}}
 </template>

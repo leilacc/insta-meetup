@@ -8,7 +8,7 @@ if (Meteor.isClient) {
   window.Meetups = Meetups;
   window.TagHash = TagHash;
 
-  Session.set('curr_tag', null);
+  Session.set('curr_tag', '');
   Session.set('tag_results', null);
 
   var tagHash_loaded = false;
@@ -45,6 +45,10 @@ if (Meteor.isClient) {
     return Session.get('tag_results');
   };
 
+  Template.tag_results.tag = function() {
+    return Session.get('curr_tag');
+  };
+
   function getTags(meetup) {
     var tokens = meetup.split(" ");
     var tags = [];
@@ -73,8 +77,9 @@ if (Meteor.isClient) {
     }
   }
 
-  Template.feed.events({
+  Template.new_meetup.events({
     'submit #new_meetup_wrapper': function() {
+      debugger;
       var $meetup = $('#new_meetup');
       var tags_tuple = getTags($meetup.val());
       var tags = tags_tuple[1];
@@ -114,18 +119,13 @@ if (Meteor.isClient) {
     var tag_results = [];
     for (var i = 0; i < tag_meetup_ids.length; i++) {
       curr_meetup_id = tag_meetup_ids[i];
-      tag_results.push(Meetups.find({_id: curr_meetup_id}).fetch());
+      tag_results.push(Meetups.find({_id: curr_meetup_id}).fetch()[0]);
     }
     Session.set('tag_results', tag_results);
   }
 
   function setPageState() {
-    setTagResults(getTagFromURI());
-  }
-
-  function getTagFromURI() {
-    // Returns the tag specified in the URI
-    return window.location.hash;
+    setTagResults(window.location.hash);
   }
 
   function getMeetupsFromTagName(tag_name) {
@@ -135,6 +135,14 @@ if (Meteor.isClient) {
     }
     return null;
   }
+
+  Template.tag_results.events({
+    'click .stop_tag_search': function(event) {
+      Session.set('curr_tag', '');
+      Session.set('tag_results', null);
+      history.pushState(null, null, '/');
+    }
+  });
 }
 
 if (Meteor.isServer) {

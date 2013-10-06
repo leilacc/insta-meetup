@@ -70,17 +70,12 @@ if (Meteor.isClient) {
     return Meetups.find({}).fetch().reverse();
   };
 
-  function areResults(results) {
-    for (var i = 0; i < results.length; i++) {
-      if (results[i] != '') {
-        return true;
-      }
-    }
-    return false;
+  function isExistingTag(tag_name) {
+    return TagHash.findOne({tag: tag_name});
   }
 
   Template.feed.results = function() {
-    return areResults(Session.get('curr_tags'));
+    return Session.get('curr_tags');
   };
 
   Template.feed.userid = function() {
@@ -101,7 +96,7 @@ if (Meteor.isClient) {
     var linked_val = [];
     for (var i = 0; i < tokens.length; i++) {
       var curr_token = tokens[i];
-      if (curr_token[0] == '#') {
+      if (curr_token[0] == '#' && isExistingTag(curr_token)) {
         tags.push(curr_token);
         linked_val.push('<a href="/' + curr_token + '">' + curr_token + '</a>');
       } else {

@@ -46,7 +46,10 @@
   {{#each meetups}}
     {{{this.meetup_with_linked_tags}}}
     {{this.datetime}}
+    {{#ifOp this.userid}}
     <input type="button" value="Delete Event" class="delete_meetup" data-id={{this.userid}}>
+    {{else}}
+    {{/ifOp}}
     <br>
   {{/each}}
 </template>

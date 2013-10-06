@@ -67,6 +67,14 @@ if (Meteor.isClient) {
     return getTagResults(Session.get('curr_tag'));
   };
 
+  Template.feed.ifOp = function(var1, options) {
+        if(var1 == Meteor.user().services.facebook.id) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+  };
+
   Template.tag_results.tag = function() {
     return Session.get('curr_tag');
   };

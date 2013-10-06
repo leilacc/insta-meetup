@@ -1,5 +1,5 @@
 <head>
-  <title>insta-meetup</title>
+  <title>What's Up</title>
   <link href='http://fonts.googleapis.com/css?family=Amaranth' rel='stylesheet' type='text/css'>
   <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 </head>
@@ -31,6 +31,7 @@
 
 <template name="new_meetup">
   <div class='span1'>
+    {{new_meetup}}
   </div>
   <div class='span3 header'>
     <a href='/'>Who wants to</a>
@@ -59,7 +60,8 @@
           {{{this.meetup_with_linked_tags}}}
         </div>
         <div class='meetup_time'>
-          {{this.datetime}}
+          Posted
+          <span class="meetup_timeelapsed"> {{time_elapsed this.creationTime}} ago</span>
         </div>
       </div>
     {{/each}}
@@ -68,16 +70,23 @@
 
 <template name="tag_results">
   {{#if results}}
-    <input type="button" value="{{tag}}    X" class="stop_tag_search" data-id="{{tag}}">
+    {{#each tags}}
+      <input type="button" value="{{this}}    X" class="stop_tag_search" data-id="{{this}}">
+    {{/each}}
     <br>
     {{#each results}}
       <div class='meetup'>
-        <input type="button" value="Delete Event" class="delete_meetup" data-id={{this.userid}}>
+        <img class='profile' src={{this.fpic}} />
+        {{#ifOp this.userid}}
+          <input type="button" value="Delete Event" class="delete_meetup" data-id={{this.userid}}>
+        {{else}}
+        {{/ifOp}}
         <div class='meetup_name'>
           {{{this.meetup_with_linked_tags}}}
         </div>
         <div class='meetup_time'>
-          {{this.datetime}}
+          Posted
+          <span class="meetup_timeelapsed"> {{time_elapsed this.creationTime}} ago</span>
         </div>
       </div>
     {{/each}}

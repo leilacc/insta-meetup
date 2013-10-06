@@ -1,3 +1,5 @@
 -don't allow empty meetups to be submitted
--support searching by multiple tags at once
--untag from TagHash on delete
+-let user know that they must be signed in when they try doing anything
+-css max width/height for pics
+-can't see meetups when not logged in
+-1 hours

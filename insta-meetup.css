@@ -46,6 +46,11 @@ body {
   font-size: 14px; 
 }
 
+.meetup_timeelapsed {
+  font-weight: bold;
+  color: green;
+}
+
 input {
   border-width: 0px 0px 5px;
   color: #333;

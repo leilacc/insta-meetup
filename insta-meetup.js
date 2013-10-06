@@ -1,7 +1,7 @@
 var Meetups = new Meteor.Collection("meetups");
 // Map of tag to array of meetup IDs containing that tag
 var TagHash = new Meteor.Collection("tagHash");
-var curDate = new Date();
+var creationDate = new Date();
 
 if (Meteor.isClient) {
   // for debugging
@@ -51,7 +51,7 @@ if (Meteor.isClient) {
   function deleteOld() {
     var meets = Meetups.find({});
     meets.forEach(function(meet) {
-          if(curDate.getDate() > (parseInt(meet.timestamp)+3) % 30) {
+          if(creationDate.getDate() > (parseInt(meet.timestamp)+3) % 30) {
             Meetups.remove({_id: meet._id});
           }
     });
@@ -115,6 +115,15 @@ if (Meteor.isClient) {
     }
   }
 
+  Template.feed.time_elapsed = function(createTime) {
+    var timeElapsed = new Date().getTime() - createTime;
+    var min = (timeElapsed / 1000 / 60).toFixed(0);
+    var hours = (min / 60).toFixed(0);
+    var days = (hours / 60).toFixed(0);
+    return days > 0 ? days+" days" :
+                      hours > 0 ? hours+" hours" : min+" min";  
+  };
+
   Template.new_meetup.events({
     'submit #new_meetup_wrapper': function() {
       var $meetup = $('#new_meetup');
@@ -125,12 +134,19 @@ if (Meteor.isClient) {
       }
 
       if(Meteor.user() != null) {
-        var datetime = "Creation Date: " + (curDate.getMonth()+1) + "/"
-                      + (curDate.getDate())  + "/"
-                      + curDate.getFullYear() + " @ "
-                      + curDate.getHours() + ":"
-                      + curDate.getMinutes() + ":"
-                      + curDate.getSeconds();
+        var creationTime = creationDate.getTime();
+        var creationHour = creationDate.getHours();
+        var creationMin = creationDate.getMinutes();
+        var ampm = creationHour >= 12 ? ' PM' : ' AM';
+        creationHour = creationHour % 12;
+        creationHour = creationHour ? creationHour : 12; // hour '0' should be '12'
+        creationMin = creationMin < 10 ? '0'+creationMin : creationMin;
+        var datetime = (creationDate.getMonth()+1) + "/"
+                      + (creationDate.getDate())  + "/"
+                      + creationDate.getFullYear() + " @ "
+                      + creationHour + ":"
+                      + creationMin
+                      + ampm;
 
        var fpicurl = "http://graph.facebook.com/" + Meteor.user().services.facebook.id + "/picture/?type=small";
        var new_meetup = Meetups.insert({meetup: $meetup.val(),
@@ -139,6 +155,7 @@ if (Meteor.isClient) {
                                          tags_tuple[0],
                                        timestamp: new Date().getDate(),
                                        datetime: datetime,
+                                       creationTime: creationTime,
                                        userid: Meteor.user().services.facebook.id,
                                        fpic: String(fpicurl)});
 

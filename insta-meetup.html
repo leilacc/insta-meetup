@@ -55,7 +55,9 @@
           {{{this.meetup_with_linked_tags}}}
         </div>
         <div class='meetup_time'>
-          {{this.datetime}}
+          This was posted at 
+          {{this.datetime}},
+          <span class="meetup_timeelapsed"> {{time_elapsed this.creationTime}} ago</span>
         </div>
       </div>
     {{/each}}

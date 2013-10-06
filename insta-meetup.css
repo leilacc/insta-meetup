@@ -59,6 +59,11 @@ input [type="submit"] {
   margin-bottom: 30px;
 }
 
+.delete_meetup {
+  float: right;
+  margin-top: 6px;
+}
+
 #fblogin {
   text-align: right;
 }

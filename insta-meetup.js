@@ -24,12 +24,13 @@ if (Meteor.isClient) {
           // Trying to change to a different page
         if (url_suffix == '') {
           // Trying to go back to main page
-          unsetCurrTag();        
+          unsetCurrTag();
         } else {
           // Trying to go to a tag page
           history.pushState(null, null, encodeURI(url_suffix));
           setPageState();
         }
+
       }
       return false;
     });
@@ -46,7 +47,6 @@ if (Meteor.isClient) {
 
   deleteOld();
 
-  Meteor.loginWithFacebook();
   console.log(Meteor.user());
   Accounts.ui.config({
     requestPermissions: {
@@ -57,6 +57,10 @@ if (Meteor.isClient) {
 
   Template.feed.meetups = function() {
     return Meetups.find({}).fetch().reverse();
+  };
+
+  Template.feed.userid = function() {
+        return Meteor.user();
   };
 
   Template.tag_results.results = function() {
@@ -103,23 +107,27 @@ if (Meteor.isClient) {
       if(Meteor.user() == null) {
         Meteor.loginWithFacebook();
       }
-      var datetime = "Creation Date: " + (curDate.getMonth()+1) + "/"
+
+      if(Meteor.user() != null) {
+        var datetime = "Creation Date: " + (curDate.getMonth()+1) + "/"
                       + (curDate.getDate())  + "/"
                       + curDate.getFullYear() + " @ "
                       + curDate.getHours() + ":"
                       + curDate.getMinutes() + ":"
                       + curDate.getSeconds();
 
-      var new_meetup = Meetups.insert({meetup: $meetup.val(),
+        var new_meetup = Meetups.insert({meetup: $meetup.val(),
                                        tags: tags,
                                        meetup_with_linked_tags:
                                          tags_tuple[0],
                                        timestamp: new Date().getDate(),
-                                       datetime: datetime});
+                                       datetime: datetime,
+                                       userid: Meteor.user().services.facebook.id});
 
-      updateTagHash(new_meetup, tags);
-      $meetup.val('');
-      deleteOld();
+        updateTagHash(new_meetup, tags);
+        $meetup.val('');
+        deleteOld();
+      }
       return false;
     }
   });
@@ -165,6 +173,15 @@ if (Meteor.isClient) {
   Template.tag_results.events({
     'click .stop_tag_search': function(event) {
       unsetCurrTag();
+    }
+  });
+
+  Template.feed.events({
+    'click .delete_meetup': function(event) {
+        curUser = Meteor.user().services.facebook.id;
+        if (curUser == this.userid) {
+            Meetups.remove({_id: this._id});
+        }
     }
   });
 }

@@ -27,6 +27,7 @@
   {{#each meetups}}
     {{{this.meetup_with_linked_tags}}}
     {{this.datetime}}
+    <input type="button" value="Delete Event" class="delete_meetup" data-id={{this.userid}}>
     <br>
   {{/each}}
 </template>

@@ -4,6 +4,9 @@ body {
 
 #page_head {
   position: fixed;
+  top: 0px;
+  padding-top: 10px;
+  background-color: white;
 }
 
 #page_data {
@@ -41,6 +44,11 @@ body {
 
 .meetup_time {
   font-size: 14px; 
+}
+
+.meetup_timeelapsed {
+  font-weight: bold;
+  color: green;
 }
 
 input {

@@ -46,7 +46,11 @@
   {{#unless results}}
     {{#each meetups}}
       <div class='meetup'>
-        <input type="button" value="Delete Event" class="delete_meetup" data-id={{this.userid}}>
+        <img class='profile' src={{profileimg}} />
+        {{#ifOp this.userid}}
+          <input type="button" value="Delete Event" class="delete_meetup" data-id={{this.userid}}>
+        {{else}}
+        {{/ifOp}}
         <div class='meetup_name'>
           {{{this.meetup_with_linked_tags}}}
         </div>

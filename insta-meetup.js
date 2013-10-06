@@ -36,6 +36,18 @@ if (Meteor.isClient) {
     });
   });
 
+  Template.feed.ifOp = function(var1, options) {
+    if(var1 == Meteor.user().services.facebook.id) {
+      return options.fn(this);
+    } else {
+      return options.inverse(this);
+    }
+  };
+  
+  Template.feed.profileimg = function() {
+        return "http://graph.facebook.com/" + Meteor.user().services.facebook.id + "/picture/?type=small";
+  }
+
   function deleteOld() {
     var meets = Meetups.find({});
     meets.forEach(function(meet) {
@@ -182,22 +194,24 @@ if (Meteor.isClient) {
 
   Template.feed.events({
     'click .delete_meetup': function(event) {
-      deleteMeetup(event);
+      deleteMeetup(this);
     }
   });
 
   Template.tag_results.events({
     'click .delete_meetup': function(event) {
-      deleteMeetup(event);
+      deleteMeetup(this);
     }
   });
 
-  function deleteMeetup(event){
+  function deleteMeetup(meetup){
     debugger;
     curUser = Meteor.user().services.facebook.id;
-    if (curUser == this.userid) {
-        removeMeetupFromTagHash(this._id);
-        Meetups.remove({_id: this._id});
+    console.log(curUser);
+    console.log(meetup.userid);
+    if (curUser == meetup.userid) {
+        removeMeetupFromTagHash(meetup._id);
+        Meetups.remove({_id: meetup._id});
     }
   }
 

@@ -30,7 +30,6 @@ if (Meteor.isClient) {
           history.pushState(null, null, encodeURI(url_suffix));
           setPageState();
         }
-
       }
       return false;
     });
@@ -59,7 +58,6 @@ if (Meteor.isClient) {
 
   deleteOld();
 
-  console.log(Meteor.user());
   Accounts.ui.config({
     requestPermissions: {
         facebook: ['email'],
@@ -103,6 +101,77 @@ if (Meteor.isClient) {
     return [linked_val.join(' '), tags];
   }
 
+  function getLocation(meetup) {
+    Session.set("meetu", meetup);
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showInitPosition, error);
+    } else {
+        error('not supported');
+    }
+  }
+
+  function showInitPosition(position) {
+      showPosition(position.coords.latitude, position.coords.longitude, ".span4");
+      Meetups.update({_id: Session.get("meetu")}, {$set: {coord: position}});
+  }
+
+  function updateLocation(meetup) {
+    coord = meetup.coord;
+    showPosition(coord.coords.latitude, coord.coords.longitude, ".span4");
+
+    var latlng = new google.maps.LatLng(coord.coords.latitude, coord.cords.longitude);
+    var myOptions = {
+        zoom: 15,
+        center: latlng,
+        mapTypeControl: false,
+        navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
+             mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map = new google.maps.Map(document.getElementById("mapcanvas"), myOptions);
+
+    var marker = new google.maps.Marker({
+        position: latlng,
+        map: map,
+        draggable: true
+    });
+    google.maps.event.addListener(marker, 'drag', function(event) {
+        Meetups.update({_id: meetup._id}, {$set: {coord: event.latLng}});
+    });
+
+    google.maps.event.addListener(marker, 'dragend', function(event) {
+        Meetups.update({_id: meetup._id}, {$set: {lat: event.latLng}});
+    });
+  }
+
+  function showPosition(xcoord, ycoord, mappos) {
+      var mapcanvas = document.createElement('div');
+      mapcanvas.id = 'mapcanvas';
+      mapcanvas.style.height = '1000px';
+      mapcanvas.style.width = '400px';
+      document.querySelector(String(mappos)).appendChild(mapcanvas);
+      var latlng = new google.maps.LatLng(xcoord, ycoord);
+      var myOptions = {
+        zoom: 15,
+        center: latlng,
+        mapTypeControl: false,
+        navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
+             mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      var map = new google.maps.Map(document.getElementById("mapcanvas"), myOptions);
+
+      var marker = new google.maps.Marker({
+        position: latlng,
+        map: map,
+        draggable: true
+      });
+  }
+
+  function error(msg) {
+    var s = document.querySelector('#status');
+    s.innerHTML = typeof msg == 'string' ? msg : "failed";
+    s.className = 'fail';
+  }
+
   function updateTagHash(meetup_id, tags) {
     for (var i = 0; i < tags.length; i++) {
       var curr_tag = tags[i];
@@ -140,7 +209,8 @@ if (Meteor.isClient) {
                                        timestamp: new Date().getDate(),
                                        datetime: datetime,
                                        userid: Meteor.user().services.facebook.id,
-                                       fpic: String(fpicurl)});
+                                       fpic: String(fpicurl),
+                                       coord: true});
 
         updateTagHash(new_meetup, tags);
         $meetup.val('');
@@ -197,6 +267,10 @@ if (Meteor.isClient) {
   Template.feed.events({
     'click .delete_meetup': function(event) {
       deleteMeetup(this);
+    },
+
+    'click .change_meetup': function(event) {
+        changeMeetup(this);
     }
   });
 
@@ -207,18 +281,21 @@ if (Meteor.isClient) {
   });
 
   function deleteMeetup(meetup){
-    debugger;
     curUser = Meteor.user().services.facebook.id;
-    console.log(curUser);
-    console.log(meetup.userid);
     if (curUser == meetup.userid) {
         removeMeetupFromTagHash(meetup._id);
         Meetups.remove({_id: meetup._id});
     }
   }
 
+  function changeMeetup(meetup) {
+    curUser = Meteor.user().services.facebook.id;
+    if (curUser == meetup.userid) {
+        updateLocation(meetup);
+    }
+  }
+
   function removeMeetupFromTagHash(meetup_id) {
-    debugger;
     var tags = Meetups.findOne({_id: meetup_id}).tags;
     for (var i = 0; i < tags.length; i++) {
       var curr_tag = TagHash.findOne({tag: tags[i]});

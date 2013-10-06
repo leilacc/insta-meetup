@@ -34,29 +34,42 @@
   <div class='span3 header'>
     <a href='/'>Who wants to</a>
   </div>
-  <div class='span6 header'>
+  <div class='span8 header'>
     <form id='new_meetup_wrapper'>
-      <input type="text" placeholder="play Settlers of Catan" id="new_meetup">
-      <input type="submit" value="?" />
+      <input type="text" placeholder="play Settlers of Catan" id="new_meetup"
+             style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 18px;">
     </form>
   </div>
 </template>
 
 <template name="feed">
-  {{#each meetups}}
-    {{{this.meetup_with_linked_tags}}}
-    {{this.datetime}}
-    <br>
-  {{/each}}
+  {{#unless results}}
+    {{#each meetups}}
+      <div class='meetup'>
+        <div class='meetup_name'>
+          {{{this.meetup_with_linked_tags}}}
+        </div>
+        <div class='meetup_time'>
+          {{this.datetime}}
+        </div>
+      </div>
+    {{/each}}
+  {{/unless}}
 </template>
 
 <template name="tag_results">
   {{#if results}}
-    <input type="button" value="{{tag}} X" class="stop_tag_search" data-id="{{tag}}">
+    <input type="button" value="{{tag}}    X" class="stop_tag_search" data-id="{{tag}}">
     <br>
     {{#each results}}
-      {{{this.meetup_with_linked_tags}}}
-      <br>
+      <div class='meetup'>
+        <div class='meetup_name'>
+          {{{this.meetup_with_linked_tags}}}
+        </div>
+        <div class='meetup_time'>
+          {{this.datetime}}
+        </div>
+      </div>
     {{/each}}
   {{/if}}
 </template>

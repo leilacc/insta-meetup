@@ -51,6 +51,10 @@ if (Meteor.isClient) {
     return Meetups.find({}).fetch().reverse();
   };
 
+  Template.feed.results = function() {
+    return Session.get('curr_tag');
+  };
+
   Template.tag_results.results = function() {
     return getTagResults(Session.get('curr_tag'));
   };

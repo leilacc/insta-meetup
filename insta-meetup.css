@@ -11,7 +11,11 @@ body {
 }
 
 #new_meetup {
-  width: 90%;
+  width: 98%;
+}
+
+#new_meetup_wrapper {
+  font-size: 18px;
 }
 
 .header a {
@@ -25,6 +29,20 @@ body {
   margin-top: 80px;
 }
 
+.meetup {
+  background-color: #EEE;
+  margin-bottom: 13px;
+  padding: 7px;
+}
+
+.meetup_name {
+  font-size: 18px; 
+}
+
+.meetup_time {
+  font-size: 14px; 
+}
+
 input {
   border-width: 0px 0px 5px;
   color: #333;
@@ -35,6 +53,10 @@ input {
 
 input [type="submit"] {
   border: 0;
+}
+
+.stop_tag_search {
+  margin-bottom: 30px;
 }
 
 #fblogin {

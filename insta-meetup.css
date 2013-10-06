@@ -57,6 +57,7 @@ input [type="submit"] {
 
 .stop_tag_search {
   margin-bottom: 30px;
+  margin-right: 13px;
 }
 
 .delete_meetup {

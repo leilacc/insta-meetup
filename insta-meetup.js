@@ -8,7 +8,7 @@ if (Meteor.isClient) {
   window.Meetups = Meetups;
   window.TagHash = TagHash;
 
-  Session.set('curr_tag', '');
+  Session.set('curr_tags', []);
   Session.set('tag_results', null);
 
   var tagHash_loaded = false;
@@ -45,7 +45,7 @@ if (Meteor.isClient) {
   };
   
   Template.feed.profileimg = function() {
-        return "http://graph.facebook.com/" + Meteor.user().services.facebook.id + "/picture/?type=small";
+    return "http://graph.facebook.com/" + Meteor.user().services.facebook.id + "/picture/?type=small";
   }
 
   function deleteOld() {
@@ -59,7 +59,6 @@ if (Meteor.isClient) {
 
   deleteOld();
 
-  console.log(Meteor.user());
   Accounts.ui.config({
     requestPermissions: {
         facebook: ['email'],
@@ -71,8 +70,17 @@ if (Meteor.isClient) {
     return Meetups.find({}).fetch().reverse();
   };
 
+  function areResults(results) {
+    for (var i = 0; i < results.length; i++) {
+      if (results[i] != '') {
+        return true;
+      }
+    }
+    return false;
+  }
+
   Template.feed.results = function() {
-    return Session.get('curr_tag');
+    return areResults(Session.get('curr_tags'));
   };
 
   Template.feed.userid = function() {
@@ -80,11 +88,11 @@ if (Meteor.isClient) {
   };
 
   Template.tag_results.results = function() {
-    return getTagResults(Session.get('curr_tag'));
+    return getTagResults(Session.get('curr_tags'));
   };
 
-  Template.tag_results.tag = function() {
-    return Session.get('curr_tag');
+  Template.tag_results.tags = function() {
+    return Session.get('curr_tags');
   };
 
   function getTags(meetup) {
@@ -114,6 +122,16 @@ if (Meteor.isClient) {
       }
     }
   }
+
+  Template.new_meetup.events({
+    'input #new_meetup_wrapper': function() {
+      var $meetup = $('#new_meetup');
+      var tags = getTags($meetup.val())[1];
+      var tagged_meetups = getTagResults(tags);
+      Session.set('curr_tags', tags);
+      Session.set('tag_results', tagged_meetups);
+    }
+  });
 
   Template.new_meetup.events({
     'submit #new_meetup_wrapper': function() {
@@ -153,9 +171,21 @@ if (Meteor.isClient) {
     setPageState();
   };
 
-  function getTagResults(tag_name) {
-    Session.set('curr_tag', tag_name);
-    var tag_meetup_ids = getMeetupsFromTagName(tag_name);
+  function getTagResults(tags) {
+    // Returns an array of the Meetup objects that have a tag in tags
+    var tag_meetup_ids = [];
+    for (var i = 0; i < tags.length; i++) {
+      var meetup_ids = getMeetupIdsFromTagName(tags[i]);
+      if (meetup_ids != null) {
+        for (var j = 0; j < meetup_ids.length; j++) {
+          var curr_meetup_id = meetup_ids[i];
+          if ($.inArray(curr_meetup_id, tag_meetup_ids) == -1) {
+            // curr_meetup_id is not in tag_meetup_ids yet
+            tag_meetup_ids.push(curr_meetup_id);
+          }
+        }
+      }
+    }
     if (tag_meetup_ids == null) {
       return null;
     }
@@ -163,16 +193,20 @@ if (Meteor.isClient) {
     var tag_results = [];
     for (var i = 0; i < tag_meetup_ids.length; i++) {
       curr_meetup_id = tag_meetup_ids[i];
-      tag_results.push(Meetups.find({_id: curr_meetup_id}).fetch()[0]);
+      tag_results.push(Meetups.findOne({_id: curr_meetup_id}));
     }
     return tag_results
   }
 
   function setPageState() {
-    getTagResults(window.location.hash);
+    var new_tag = window.location.hash;
+    Session.set('tag_results', getTagResults(new_tag));
+    var new_tags = Session.get('curr_tags')
+    new_tags.push(new_tag);
+    Session.set('curr_tags', new_tags);
   }
 
-  function getMeetupsFromTagName(tag_name) {
+  function getMeetupIdsFromTagName(tag_name) {
     var tag_obj = TagHash.findOne({tag: tag_name});
     if (typeof tag_obj != 'undefined') {
       return tag_obj.meetup_ids
@@ -180,15 +214,42 @@ if (Meteor.isClient) {
     return null;
   }
 
-  function unsetCurrTag() {
-    Session.set('curr_tag', '');
-    Session.set('tag_results', null);
+  function removeTagFromCurrTags(tag_name) {
+    var curr_tags = Session.get('curr_tags');
+    var new_tags = [];
+    for (var i = 0; i < curr_tags.length; i++) {
+      if (curr_tags[i] != tag_name) {
+        new_tags.push(curr_tags[i]);
+      }
+    }
+    Session.set('curr_tags', new_tags);
+  }
+
+  function removeTagFromResults(tag_name) {
+    var results = Session.get('tag_results');
+    if (results == null) {
+      return results
+    }
+
+    var new_results = [];
+    for (var i = 0; i < results.length; i++) {
+      var tags = results[i].tags;
+      if (tags.length != 1 || tags[0] != tag_name) {
+        new_results.push(tags);
+      }
+    }
+    return new_results;
+  }
+
+  function unsetCurrTag(tag_name) {
+    removeTagFromCurrTags(tag_name);
+    removeTagFromResults(tag_name);
     history.pushState(null, null, '/');
   }
 
   Template.tag_results.events({
     'click .stop_tag_search': function(event) {
-      unsetCurrTag();
+      unsetCurrTag(this);
     }
   });
 
@@ -205,7 +266,6 @@ if (Meteor.isClient) {
   });
 
   function deleteMeetup(meetup){
-    debugger;
     curUser = Meteor.user().services.facebook.id;
     console.log(curUser);
     console.log(meetup.userid);
@@ -216,7 +276,6 @@ if (Meteor.isClient) {
   }
 
   function removeMeetupFromTagHash(meetup_id) {
-    debugger;
     var tags = Meetups.findOne({_id: meetup_id}).tags; 
     for (var i = 0; i < tags.length; i++) {
       var curr_tag = TagHash.findOne({tag: tags[i]});

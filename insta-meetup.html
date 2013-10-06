@@ -30,6 +30,7 @@
 
 <template name="new_meetup">
   <div class='span1'>
+    {{new_meetup}}
   </div>
   <div class='span3 header'>
     <a href='/'>Who wants to</a>
@@ -64,7 +65,9 @@
 
 <template name="tag_results">
   {{#if results}}
-    <input type="button" value="{{tag}}    X" class="stop_tag_search" data-id="{{tag}}">
+    {{#each tags}}
+      <input type="button" value="{{this}}    X" class="stop_tag_search" data-id="{{this}}">
+    {{/each}}
     <br>
     {{#each results}}
       <div class='meetup'>

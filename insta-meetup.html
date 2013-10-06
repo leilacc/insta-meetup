@@ -1,26 +1,45 @@
 <head>
   <title>insta-meetup</title>
+  <link href='http://fonts.googleapis.com/css?family=Amaranth' rel='stylesheet' type='text/css'>
 </head>
 
 <body>
-  <div id='fblogin'>
-    {{loginButtons}}
+  <div id='page_head'>
+    <div id='fblogin' class='row'>
+      <div class='span9'>
+      </div>
+      <div class='span3'>
+        {{loginButtons}}
+      </div>
+    </div>
+    <div class='row'>
+      {{> new_meetup}}
+    </div>
   </div>
-  {{> new_meetup}}
-  <div id='tag_results'>
-    {{> tag_results}}
-  </div>
-  <div id='feed'>
-    {{> feed}}
+  <div id='page_data'>
+    <div id='tag_results' class='row'>
+      <div class='span4'>
+      </div>
+      <div class='span8'>
+        {{> tag_results}}
+        {{> feed}}
+      </div>
+    </div>
   </div>
 </body>
 
 <template name="new_meetup">
-  <form id='new_meetup_wrapper'>
+  <div class='span1'>
+  </div>
+  <div class='span3 header'>
     <a href='/'>Who wants to</a>
-    <input type="text" placeholder="play Settlers of Catan" id="new_meetup">
-    <input type="submit" value="?" />
-  </form>
+  </div>
+  <div class='span6 header'>
+    <form id='new_meetup_wrapper'>
+      <input type="text" placeholder="play Settlers of Catan" id="new_meetup">
+      <input type="submit" value="?" />
+    </form>
+  </div>
 </template>
 
 <template name="feed">
@@ -42,3 +61,4 @@
     {{/each}}
   {{/if}}
 </template>
+

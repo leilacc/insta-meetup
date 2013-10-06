@@ -37,6 +37,14 @@ if (Meteor.isClient) {
   deleteOld();
 
   Meteor.loginWithFacebook();
+  console.log(Meteor.user());
+  Accounts.ui.config({
+    requestPermissions: {
+        facebook: ['email'],
+    },
+    passwordSignupFields: 'USERNAME_AND_EMAIL'
+  });
+
   Template.feed.meetups = function() {
     return Meetups.find({}).fetch().reverse();
   };
@@ -79,10 +87,12 @@ if (Meteor.isClient) {
 
   Template.new_meetup.events({
     'submit #new_meetup_wrapper': function() {
-      debugger;
       var $meetup = $('#new_meetup');
       var tags_tuple = getTags($meetup.val());
       var tags = tags_tuple[1];
+      if(Meteor.user() == null) {
+        Meteor.loginWithFacebook();
+      }
       var datetime = "Creation Date: " + (curDate.getMonth()+1) + "/"
                       + (curDate.getDate())  + "/"
                       + curDate.getFullYear() + " @ "
@@ -131,7 +141,7 @@ if (Meteor.isClient) {
   function getMeetupsFromTagName(tag_name) {
     var tag_obj = TagHash.findOne({tag: tag_name});
     if (typeof tag_obj != 'undefined') {
-      return tag_obj.meetup_ids   
+      return tag_obj.meetup_ids
     }
     return null;
   }

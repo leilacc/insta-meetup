@@ -19,8 +19,18 @@ if (Meteor.isClient) {
 
   $(function() {
     $('body').on('click', 'a', function() {
-      history.pushState(null, null, encodeURI($(this).attr('href')));
-      setPageState();
+      var url_suffix = $(this).attr('href').slice(1);
+      if (url_suffix != window.location.hash) {
+          // Trying to change to a different page
+        if (url_suffix == '') {
+          // Trying to go back to main page
+          unsetCurrTag();        
+        } else {
+          // Trying to go to a tag page
+          history.pushState(null, null, encodeURI(url_suffix));
+          setPageState();
+        }
+      }
       return false;
     });
   });
@@ -50,7 +60,7 @@ if (Meteor.isClient) {
   };
 
   Template.tag_results.results = function() {
-    return Session.get('tag_results');
+    return getTagResults(Session.get('curr_tag'));
   };
 
   Template.tag_results.tag = function() {
@@ -119,7 +129,7 @@ if (Meteor.isClient) {
     setPageState();
   };
 
-  function setTagResults(tag_name) {
+  function getTagResults(tag_name) {
     Session.set('curr_tag', tag_name);
     var tag_meetup_ids = getMeetupsFromTagName(tag_name);
     if (tag_meetup_ids == null) {
@@ -131,11 +141,11 @@ if (Meteor.isClient) {
       curr_meetup_id = tag_meetup_ids[i];
       tag_results.push(Meetups.find({_id: curr_meetup_id}).fetch()[0]);
     }
-    Session.set('tag_results', tag_results);
+    return tag_results
   }
 
   function setPageState() {
-    setTagResults(window.location.hash);
+    getTagResults(window.location.hash);
   }
 
   function getMeetupsFromTagName(tag_name) {
@@ -146,11 +156,15 @@ if (Meteor.isClient) {
     return null;
   }
 
+  function unsetCurrTag() {
+    Session.set('curr_tag', '');
+    Session.set('tag_results', null);
+    history.pushState(null, null, '/');
+  }
+
   Template.tag_results.events({
     'click .stop_tag_search': function(event) {
-      Session.set('curr_tag', '');
-      Session.set('tag_results', null);
-      history.pushState(null, null, '/');
+      unsetCurrTag();
     }
   });
 }

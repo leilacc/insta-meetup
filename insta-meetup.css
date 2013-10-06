@@ -6,11 +6,15 @@ body {
   width: 300px;
 }
 
-#logo a {
+.header a {
   color: #3232CC;
   font-family: 'Amaranth', Helvetica, Sans Serif;
-  font-size: 28px;
+  font-size: 36px;
   text-decoration: none;
+}
+
+.header {
+  margin-top: 60px;
 }
 
 input {
@@ -23,4 +27,8 @@ input {
 
 input [type="submit"] {
   border: 0;
+}
+
+#fblogin {
+  float: right;
 }

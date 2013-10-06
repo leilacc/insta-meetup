@@ -7,31 +7,41 @@
   <div id='fblogin'>
     {{loginButtons}}
   </div>
-  {{> new_meetup}}
-  <div id='tag_results'>
+  <div class='row'>
+    {{> new_meetup}}
+  </div>
+  <div id='tag_results' class='row'>
     {{> tag_results}}
   </div>
-  <div id='feed'>
+  <div id='feed' class='row'>
     {{> feed}}
   </div>
 </body>
 
 <template name="new_meetup">
-  <form id='new_meetup_wrapper'>
-    <span id='logo'>
-      <a href='/'>Who wants to</a>
-    </span>
-    <input type="text" placeholder="play Settlers of Catan" id="new_meetup">
-    <input type="submit" value="?" />
-  </form>
+  <div class='span1'>
+  </div>
+  <div class='span3 header'>
+    <a href='/'>Who wants to</a>
+  </div>
+  <div class='span6 header'>
+    <form id='new_meetup_wrapper'>
+      <input type="text" placeholder="play Settlers of Catan" id="new_meetup">
+      <input type="submit" value="?" />
+    </form>
+  </div>
 </template>
 
 <template name="feed">
-  {{#each meetups}}
-    {{{this.meetup_with_linked_tags}}}
-    {{this.datetime}}
-    <br>
-  {{/each}}
+  <div class='span4'>
+  </div>
+  <div class='span8'>
+    {{#each meetups}}
+      {{{this.meetup_with_linked_tags}}}
+      {{this.datetime}}
+      <br>
+    {{/each}}
+  </div>
 </template>
 
 <template name="tag_results">

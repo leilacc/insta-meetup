@@ -4,17 +4,27 @@
 </head>
 
 <body>
-  <div id='fblogin'>
-    {{loginButtons}}
+  <div id='page_head'>
+    <div id='fblogin' class='row'>
+      <div class='span9'>
+      </div>
+      <div class='span3'>
+        {{loginButtons}}
+      </div>
+    </div>
+    <div class='row'>
+      {{> new_meetup}}
+    </div>
   </div>
-  <div class='row'>
-    {{> new_meetup}}
-  </div>
-  <div id='tag_results' class='row'>
-    {{> tag_results}}
-  </div>
-  <div id='feed' class='row'>
-    {{> feed}}
+  <div id='page_data'>
+    <div id='tag_results' class='row'>
+      <div class='span4'>
+      </div>
+      <div class='span8'>
+        {{> tag_results}}
+        {{> feed}}
+      </div>
+    </div>
   </div>
 </body>
 
@@ -33,15 +43,11 @@
 </template>
 
 <template name="feed">
-  <div class='span4'>
-  </div>
-  <div class='span8'>
-    {{#each meetups}}
-      {{{this.meetup_with_linked_tags}}}
-      {{this.datetime}}
-      <br>
-    {{/each}}
-  </div>
+  {{#each meetups}}
+    {{{this.meetup_with_linked_tags}}}
+    {{this.datetime}}
+    <br>
+  {{/each}}
 </template>
 
 <template name="tag_results">

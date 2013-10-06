@@ -1,9 +1,17 @@
 body {
-  padding: 20px 100px;
+  padding: 20px 10px;
+}
+
+#page_head {
+  position: fixed;
+}
+
+#page_data {
+  margin-top: 200px;
 }
 
 #new_meetup {
-  width: 300px;
+  width: 90%;
 }
 
 .header a {
@@ -14,7 +22,7 @@ body {
 }
 
 .header {
-  margin-top: 60px;
+  margin-top: 80px;
 }
 
 input {
@@ -30,5 +38,5 @@ input [type="submit"] {
 }
 
 #fblogin {
-  float: right;
+  text-align: right;
 }

@@ -64,6 +64,12 @@ input [type="submit"] {
   margin-top: 6px;
 }
 
+img {
+  float: left;
+  margin-top: 6px;
+  padding-right: 7px;
+}
+
 #fblogin {
   text-align: right;
 }

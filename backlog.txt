@@ -2,4 +2,5 @@
 -let user know that they must be signed in when they try doing anything
 -css max width/height for pics
 -can't see meetups when not logged in
--1 hours
+-'1 hours'
+-$push in updateTagHash doesn't work

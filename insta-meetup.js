@@ -125,8 +125,10 @@ if (Meteor.isClient) {
       var tag = TagHash.findOne({tag: curr_tag});
       if (typeof tag == 'undefined') {
         TagHash.insert({tag: curr_tag, meetup_ids: [meetup_id]});
+        console.log('new tag');
       } else {
         TagHash.update({_id: curr_tag._id}, {$push: {meetup_ids: meetup_id}});
+        console.log('added to tag');
       }
     }
   }
@@ -136,9 +138,12 @@ if (Meteor.isClient) {
       return;
     }
 
-    var new_tags = Session.get('curr_tags')
-    new_tags.push(tag_name);
-    Session.set('curr_tags', new_tags);
+    var curr_tags = Session.get('curr_tags')
+    if ($.inArray(tag_name, curr_tags) == -1) {
+      // tag_name is not in curr_tags yet
+      curr_tags.push(tag_name);
+    }
+    Session.set('curr_tags', curr_tags);
   }
 
   Template.new_meetup.events({

@@ -75,7 +75,12 @@ if (Meteor.isClient) {
   }
 
   Template.feed.results = function() {
-    return Session.get('curr_tags');
+    for (var i = 0; i < Session.get('curr_tags'); i++) {
+      if (isExistingTag(Session.get('curr_tags')[i])) {
+        return true;
+      }
+    }
+    return false;
   };
 
   Template.feed.userid = function() {
@@ -120,6 +125,7 @@ if (Meteor.isClient) {
 
   Template.new_meetup.events({
     'input #new_meetup_wrapper': function() {
+      debugger;
       var $meetup = $('#new_meetup');
       var tags = getTags($meetup.val())[1];
       var tagged_meetups = getTagResults(tags);

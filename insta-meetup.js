@@ -75,6 +75,10 @@ if (Meteor.isClient) {
         }
   };
 
+  Template.feed.profileimg = function() {
+        return "http://graph.facebook.com/" + Meteor.user().services.facebook.id + "/picture/?type=small";
+  }
+
   Template.tag_results.tag = function() {
     return Session.get('curr_tag');
   };

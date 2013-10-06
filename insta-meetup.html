@@ -1,5 +1,5 @@
 <head>
-  <title>insta-meetup</title>
+  <title>What's Up</title>
   <link href='http://fonts.googleapis.com/css?family=Amaranth' rel='stylesheet' type='text/css'>
 </head>
 
@@ -56,8 +56,7 @@
           {{{this.meetup_with_linked_tags}}}
         </div>
         <div class='meetup_time'>
-          This was posted at 
-          {{this.datetime}},
+          Posted
           <span class="meetup_timeelapsed"> {{time_elapsed this.creationTime}} ago</span>
         </div>
       </div>
@@ -73,12 +72,17 @@
     <br>
     {{#each results}}
       <div class='meetup'>
-        <input type="button" value="Delete Event" class="delete_meetup" data-id={{this.userid}}>
+        <img class='profile' src={{this.fpic}} />
+        {{#ifOp this.userid}}
+          <input type="button" value="Delete Event" class="delete_meetup" data-id={{this.userid}}>
+        {{else}}
+        {{/ifOp}}
         <div class='meetup_name'>
           {{{this.meetup_with_linked_tags}}}
         </div>
         <div class='meetup_time'>
-          {{this.datetime}}
+          Posted
+          <span class="meetup_timeelapsed"> {{time_elapsed this.creationTime}} ago</span>
         </div>
       </div>
     {{/each}}

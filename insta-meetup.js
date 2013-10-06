@@ -24,12 +24,12 @@ if (Meteor.isClient) {
           // Trying to change to a different page
         if (url_suffix == '') {
           // Trying to go back to main page
-          unsetAllCurrTags();
           history.pushState(null, null, '/');
+          unsetAllCurrTags();
         } else {
           // Trying to go to a tag page
-          setPageState();
           history.pushState(null, null, encodeURI(url_suffix));
+          setPageState();
         }
 
       }
@@ -156,6 +156,15 @@ if (Meteor.isClient) {
   });
 
   Template.feed.time_elapsed = function(createTime) {
+    var timeElapsed = new Date().getTime() - createTime;
+    var min = (timeElapsed / 1000 / 60).toFixed(0);
+    var hours = (min / 60).toFixed(0);
+    var days = (hours / 60).toFixed(0);
+    return days > 0 ? days+" days" :
+                      hours > 0 ? hours+" hours" : min+" min";  
+  };
+
+  Template.tag_results.time_elapsed = function(createTime) {
     var timeElapsed = new Date().getTime() - createTime;
     var min = (timeElapsed / 1000 / 60).toFixed(0);
     var hours = (min / 60).toFixed(0);

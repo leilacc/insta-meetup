@@ -43,7 +43,7 @@ if (Meteor.isClient) {
       return options.inverse(this);
     }
   };
-  
+
   Template.feed.profileimg = function() {
         return "http://graph.facebook.com/" + Meteor.user().services.facebook.id + "/picture/?type=small";
   }
@@ -132,13 +132,15 @@ if (Meteor.isClient) {
                       + curDate.getMinutes() + ":"
                       + curDate.getSeconds();
 
-        var new_meetup = Meetups.insert({meetup: $meetup.val(),
+       var fpicurl = "http://graph.facebook.com/" + Meteor.user().services.facebook.id + "/picture/?type=small";
+       var new_meetup = Meetups.insert({meetup: $meetup.val(),
                                        tags: tags,
                                        meetup_with_linked_tags:
                                          tags_tuple[0],
                                        timestamp: new Date().getDate(),
                                        datetime: datetime,
-                                       userid: Meteor.user().services.facebook.id});
+                                       userid: Meteor.user().services.facebook.id,
+                                       fpic: String(fpicurl)});
 
         updateTagHash(new_meetup, tags);
         $meetup.val('');
@@ -217,7 +219,7 @@ if (Meteor.isClient) {
 
   function removeMeetupFromTagHash(meetup_id) {
     debugger;
-    var tags = Meetups.findOne({_id: meetup_id}).tags; 
+    var tags = Meetups.findOne({_id: meetup_id}).tags;
     for (var i = 0; i < tags.length; i++) {
       var curr_tag = TagHash.findOne({tag: tags[i]});
       var curr_tag_meetup_ids = curr_tag.meetup_ids;
